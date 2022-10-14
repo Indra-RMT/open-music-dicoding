@@ -29,14 +29,19 @@ class SongsHandler {
     }
   }
 
-  async getSongsHandler() {
-    const songs = await this._service.getSongs();
-    return {
-      status: 'success',
-      data: {
-        songs,
-      },
-    };
+  async getSongsHandler(request) {
+    try {
+      this._validator.validateSongQuery(request.query);
+      const songs = await this._service.getSongs(request.query);
+      return {
+        status: 'success',
+        data: {
+          songs,
+        },
+      };
+    } catch (error) {
+      return error;
+    }
   }
 
   async getSongByIdHandler(request) {

@@ -42,8 +42,32 @@ class SongsService {
     return result.rows[0].id;
   }
 
-  async getSongs() {
-    const result = await this._pool.query(`SELECT id, title, performer FROM ${TABLE_SONGS}`);
+  async getSongs({ title, performer }) {
+    if (title && performer) {
+      const result = await this._pool.query(`
+      SELECT id, 
+             title, 
+             performer 
+      FROM  ${TABLE_SONGS} 
+      WHERE lower(title) LIKE '%${title?.toLowerCase()}%'
+        AND lower(performer) LIKE '%${performer?.toLowerCase()}%'`);
+      return result.rows.map(mapDBToModel);
+    }
+    if (title || performer) {
+      const result = await this._pool.query(`
+      SELECT id, 
+             title, 
+             performer 
+      FROM  ${TABLE_SONGS} 
+      WHERE lower(title) LIKE '%${title?.toLowerCase()}%'
+         OR lower(performer) LIKE '%${performer?.toLowerCase()}%'`);
+      return result.rows.map(mapDBToModel);
+    }
+    const result = await this._pool.query(`
+      SELECT id, 
+             title, 
+             performer 
+      FROM  ${TABLE_SONGS}`);
     return result.rows.map(mapDBToModel);
   }
 
