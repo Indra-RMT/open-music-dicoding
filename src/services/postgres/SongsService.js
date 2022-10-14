@@ -11,14 +11,17 @@ class SongsService {
     this._pool = new Pool();
   }
 
-  async addSong({ name, year }) {
-    const id = nanoid(16);
+  async addSong({
+    title, year, performer, genre, duration, album_id = '-',
+  }) {
+    const id = `song-${nanoid(16)}`;
+    const albumId = `album-${album_id}`;
     const created_at = new Date().toISOString();
     const updated_at = created_at;
 
     const query = {
-      text: `INSERT INTO ${TABLE_SONGS} values($1, $2, $3, $4, $5) RETURNING id`,
-      values: [id, name, year, created_at, updated_at],
+      text: `INSERT INTO ${TABLE_SONGS} values($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING id`,
+      values: [id, title, year, genre, performer, duration, albumId, created_at, updated_at],
     };
 
     const result = await this._pool.query(query);
@@ -31,7 +34,7 @@ class SongsService {
   }
 
   async getSongs() {
-    const result = await this._pool.query(`SELECT * FROM ${TABLE_SONGS}`);
+    const result = await this._pool.query(`SELECT id, title, performer FROM ${TABLE_SONGS}`);
     return result.rows.map(mapDBToModel);
   }
 
@@ -49,11 +52,13 @@ class SongsService {
     return result.rows.map(mapDBToModel)[0];
   }
 
-  async editSongById(id, { name, year }) {
+  async editSongById(id, {
+    title, year, genre, performer, duration, albumId,
+  }) {
     const updatedAt = new Date().toISOString();
     const query = {
-      text: `UPDATE ${TABLE_SONGS} SET name = $1, year = $2, updated_at = $3 where id = $4 RETURNING id`,
-      values: [name, year, updatedAt, id],
+      text: `UPDATE ${TABLE_SONGS} SET title = $1, year = $2, genre = $3, performer = $4, duration = $5, album_id = $6, updated_at = $7 where id = $8 RETURNING id`,
+      values: [title, year, genre, performer, duration, albumId, updatedAt, id],
     };
 
     const result = await this._pool.query(query);

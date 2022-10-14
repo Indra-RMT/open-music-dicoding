@@ -17,7 +17,7 @@ const routes = (handler) => [
   {
     method: 'PUT',
     path: '/songs/{id}',
-    handler: (request, h) => handler.putSongsByIdHandler(request, h),
+    handler: (request, h) => handler.putSongByIdHandler(request, h),
   },
   {
     method: 'DELETE',
