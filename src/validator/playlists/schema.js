@@ -2,7 +2,6 @@ const Joi = require('joi');
 
 const PostPlaylistPayloadSchema = Joi.object({
   name: Joi.string().required(),
-  userId: Joi.string().required(),
 });
 
 const PostPlaylistSongPayloadSchema = Joi.object({

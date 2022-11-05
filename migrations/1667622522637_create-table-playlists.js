@@ -12,7 +12,7 @@ exports.up = (pgm) => {
       type: 'TEXT',
       notNull: true,
     },
-    user_id: {
+    owner: {
       type: 'TEXT',
       notNull: true,
     },
