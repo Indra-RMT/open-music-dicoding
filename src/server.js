@@ -100,6 +100,7 @@ const init = async () => {
       plugin: playlists,
       options: {
         service: playlistsService,
+        songsService,
         validator: PlaylistsValidator,
       },
     },
@@ -107,6 +108,7 @@ const init = async () => {
 
   server.ext('onPreResponse', (request, h) => {
     const { response } = request;
+    console.log('err response', response);
 
     if (response instanceof Error) {
       if (response instanceof ClientError) {

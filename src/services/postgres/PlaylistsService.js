@@ -5,6 +5,7 @@ const { mapDBToModel } = require('../../utils');
 // const NotFoundError = require('../../exceptions/NotFoundError');
 
 const TABLE_PLAYLISTS = 'playlists';
+const TABLE_PLAYLIST_SONG = 'playlist_song';
 const TABLE_USERS = 'users';
 
 class PlaylistsService {
@@ -47,6 +48,27 @@ class PlaylistsService {
     };
     const playlistsResult = await this._pool.query(query);
     return playlistsResult.rows.map(mapDBToModel);
+  }
+
+  async addPlaylistSong({ userId, playlistId, songId }) {
+    console.log('userId', userId);
+    const playlistSongId = `playlist-song-${nanoid(16)}`;
+    const created_at = new Date().toISOString();
+    const updated_at = created_at;
+    const query = {
+      text: `INSERT INTO ${TABLE_PLAYLIST_SONG} values($1, $2, $3, $4, $5) RETURNING id`,
+      values: [
+        playlistSongId,
+        playlistId,
+        songId,
+        created_at,
+        updated_at,
+      ],
+    };
+    console.log('query', query);
+    const result = await this._pool.query(query);
+    console.log('result', result);
+    return result;
   }
 }
 

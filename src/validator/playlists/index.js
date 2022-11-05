@@ -1,5 +1,5 @@
 const InvariantError = require('../../exceptions/InvariantError');
-const { PostPlaylistPayloadSchema, PostPlaylistSongPayloadSchema, DeletePlaylistSongPayloadSchema, } = require('./schema');
+const { PostPlaylistPayloadSchema, PostPlaylistSongPayloadSchema, DeletePlaylistSongPayloadSchema } = require('./schema');
 
 const PlaylistsValidator = {
   validatePlaylistPayload: (payload) => {
@@ -8,13 +8,13 @@ const PlaylistsValidator = {
       throw new InvariantError(validationResult.error.message);
     }
   },
-  validatePostPlaylistSongPayloadQuery: (payload) => {
+  validatePostPlaylistSongPayload: (payload) => {
     const validationResult = PostPlaylistSongPayloadSchema.validate(payload);
     if (validationResult.error) {
       throw new InvariantError(validationResult.error.message);
     }
   },
-  validateDeletePlaylistSongPayloadQuery: (payload) => {
+  validateDeletePlaylistSongPayload: (payload) => {
     const validationResult = DeletePlaylistSongPayloadSchema.validate(payload);
     if (validationResult.error) {
       throw new InvariantError(validationResult.error.message);
