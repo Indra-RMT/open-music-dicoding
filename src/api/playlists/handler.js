@@ -1,8 +1,8 @@
 const AuthenticationError = require('../../exceptions/AuthenticationError');
 
 class PlaylistsHandler {
-  constructor(playlistService, songsService, validator) {
-    this._playlistService = playlistService;
+  constructor(playlistsService, songsService, validator) {
+    this._playlistsService = playlistsService;
     this._songsService = songsService;
     this._validator = validator;
   }
@@ -12,7 +12,7 @@ class PlaylistsHandler {
       this._validator.validatePlaylistPayload(request.payload);
       const { name } = request.payload;
       const { id: userId } = request.auth.credentials;
-      const playlistId = await this._playlistService.addPlaylist({ name, userId });
+      const playlistId = await this._playlistsService.addPlaylist({ name, userId });
       const response = h.response({
         status: 'success',
         message: 'Playlist berhasil ditambahkan',
@@ -30,7 +30,7 @@ class PlaylistsHandler {
   async getPlaylistsHandler(request, h) {
     try {
       const { id: userId } = request.auth.credentials;
-      const playlists = await this._playlistService.getPlaylists(userId);
+      const playlists = await this._playlistsService.getPlaylists(userId);
       const response = h.response({
         status: 'success',
         data: {
@@ -55,7 +55,7 @@ class PlaylistsHandler {
       }
 
       await this._songsService.getSongById(songId);
-      const playlistSongId = await this._playlistService.addPlaylistSong({
+      const playlistSongId = await this._playlistsService.addPlaylistSong({
         userId,
         playlistId,
         songId,
@@ -64,7 +64,7 @@ class PlaylistsHandler {
         status: 'success',
         message: 'Playlist song berhasil ditambahkan',
         data: {
-          playlistSongId,
+          ...playlistSongId[0],
         },
       });
       response.code(201);
@@ -72,6 +72,19 @@ class PlaylistsHandler {
     } catch (error) {
       return error;
     }
+  }
+
+  async getPlaylistSongsHandler(request, h) {
+    const { id: playlistId } = request.params;
+    const { id: userId } = request.auth.credentials;
+    const playlist = await this._playlistsService.getPlaylistSongs(userId, playlistId);
+    const songs = await this._songsService.getSongByPlaylistId(playlistId);
+    const result = {
+      ...playlist,
+      songs,
+    };
+    console.log('result', result);
+    return result;
   }
 }
 

@@ -5,7 +5,7 @@ const { mapDBToModel } = require('../../utils');
 const NotFoundError = require('../../exceptions/NotFoundError');
 
 const TABLE_SONGS = 'songs';
-
+const TABLE_PLAYLIST_SONGS = 'playlist_songs';
 class SongsService {
   constructor() {
     this._pool = new Pool();
@@ -111,6 +111,46 @@ class SongsService {
     if (!result.rows.length) {
       throw new NotFoundError('Lagu gagal dihapus. Id tidak ditemukan');
     }
+  }
+
+  async getSongByPlaylistId(playlistId) {
+    console.log('playlistId', playlistId);
+    const query = {
+      text: `SELECT *
+      FROM ${TABLE_SONGS}
+      WHERE id IN (
+        SELECT song_id FROM ${TABLE_PLAYLIST_SONGS}
+        WHERE playlist_id = $1
+      )`,
+      values: [playlistId],
+    };
+
+    const a = await this._pool.query(`SELECT ${TABLE_PLAYLIST_SONGS}.playlist_id FROM ${TABLE_PLAYLIST_SONGS}`);
+console.log('a', a);
+    // const query = {
+    //   text: `SELECT
+    //   ${TABLE_SONGS}.id,
+    //   ${TABLE_SONGS}.title,
+    //   ${TABLE_SONGS}.performer
+    //   FROM ${TABLE_SONGS}
+    //   LEFT JOIN ${TABLE_PLAYLIST_SONGS} ON ${TABLE_PLAYLIST_SONGS}.song_id = ${TABLE_SONGS}.id
+    //   WHERE ${TABLE_PLAYLIST_SONGS}.playlist_id = $1`,
+    //   values: [playlistId],
+    // };
+
+    // const query = {
+    //   text: `SELECT
+    //   * FROM ${TABLE_PLAYLIST_SONGS}`,
+    // };
+
+    const result = await this._pool.query(query);
+    console.log('result -----> : ', result.rows);
+
+    if (!result.rows.length) {
+      throw new NotFoundError('Song tidak ditemukan');
+    }
+
+    return result.rows;
   }
 }
 
