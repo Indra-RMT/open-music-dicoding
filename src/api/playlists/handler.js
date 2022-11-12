@@ -90,6 +90,30 @@ class PlaylistsHandler {
     };
     return result;
   }
+
+  async deleteSongPlaylistHandler(request) {
+    this._validator.validateDeletePlaylistSongPayload(request.payload);
+    const { id: playlistId } = request.params;
+    const { songId } = request.payload;
+    const { id: userId } = request.auth.credentials;
+    await this._playlistsService.deleteSongPlaylist(playlistId, songId, userId);
+    const result = {
+      status: 'success',
+      message: 'Lagu berhasil dihapus dari playlist',
+    };
+    return result;
+  }
+
+  async deletePlaylistByIdHandler(request) {
+    const { id: playlistId } = request.params;
+    const { id: userId } = request.auth.credentials;
+    await this._playlistsService.deletePlaylist(playlistId, userId);
+    const result = {
+      status: 'success',
+      message: 'Playlist berhasil dihapus',
+    };
+    return result;
+  }
 }
 
 module.exports = PlaylistsHandler;
